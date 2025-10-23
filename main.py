@@ -30,5 +30,23 @@ async def test():
     except Exception as e:
         return {"error": str(e)}
 
+@app.post("/set/{key}/{value}")
+async def set_key(key: str, value: str):
+    try:
+        redis_client.set(key, value)
+        return {"message": f"Set {key} = {value}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/get/{key}")
+async def get_key(key: str):
+    try:
+        value = redis_client.get(key)
+        if value is None:
+            return {"error": f"Key '{key}' not found"}
+        return {"key": key, "value": value}
+    except Exception as e:
+        return {"error": str(e)}
+
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
